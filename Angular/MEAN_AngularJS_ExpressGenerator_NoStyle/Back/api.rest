@@ -1,0 +1,23 @@
+###
+GET http://localhost:3000/todos
+
+###
+POST http://localhost:3000/todos
+Content-Type: application/json
+
+{
+    "name": "fooGER",
+    "completed": false,
+    "note": ""
+}
+
+###
+PUT http://localhost:3000/todos/6021c119902a013b545363b5
+Content-Type: application/json
+
+{
+    "name": "Good"
+}
+
+###
+DELETE  http://localhost:3000/todos/6021c28fd19ec43e10a78bea

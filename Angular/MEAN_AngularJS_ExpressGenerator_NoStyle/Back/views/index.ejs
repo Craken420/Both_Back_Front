@@ -1,0 +1,84 @@
+<html ng-app="app">
+    <head>
+        <title>ngTodo</title>
+    </head>
+    <body>
+        <ng-view></ng-view>
+        <!-- Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-resource.min.js"></script>
+        <!-- Template -->
+        <script type="text/ng-template" id="/todos.html">
+            <!-- Search: <input type="text" ng-model="search.name"> -->
+            Search: <input type="text" ng-model="search.name">
+            <ul>
+                <li ng-repeat="todo in todos | filter: search">
+                    <input type="checkbox" ng-model="todo.completed" ng-change="update($index)">
+                    <a ng-show="!editing[$index]" href="#/{{todo.id}}">{{todo.name}}</a>
+                    <button ng-show="!editing[$index]" ng-click="edit($index)">edit</button>
+                </li>
+            </ul>
+            New task <input type="text" ng-model="newTodo"><button ng-click="save()">Create</button>
+        </script>
+        <script type="text/ng-template" id="/todoDetails.html">
+            <h1>{{ todo.name }}</h1>
+            completed: <input type="checkbox" ng-model="todo.completed">
+            note: <textarea>{{todo.note}}</textarea>
+        </script>
+        <script>
+            angular.module('app', ['ngRoute', 'ngResource'])
+            //---------------
+            // Services
+            //---------------
+            // .factory('Todos', ['$http', function($http) {
+            //   return $http.get('/todos');
+            // }])
+            .factory('Todos', ['$resource', function($resource){
+              return $resource('/todos/:id', null, {
+                'update': { method:'PUT' }
+              });
+            }])
+            //---------------
+            // Controllers
+            //---------------
+            .controller('TodoController', ['$scope', 'Todos', function($scope, Todos) {
+                // Todos.success(data => {
+                //   $scope.todos = data;
+                // }).error((data, status) => {
+                //   console.log(data, status);
+                //   $scope.todos = [];
+                // });
+                $scope.todos = Todos.query();
+
+                $scope.save = function () {
+                  if(!$scope.newTodo || $scope.newTodo.length < 1) return;
+                  var todo = new Todos({ name: $scope.newTodo, completed: false });
+                  todo.$save(function(){
+                    $scope.todos.push(todo);
+                    $scope.newTodo = '';
+                  })
+                }
+            }])
+            .controller('TodoDetailsCtrl', ['$scope', '$routeParams', 'Todos',
+                function ($scope, $routeParams, Todos) {
+                    $scope.todos = Todos.get({id: $routeParams.id});
+                }
+            ])
+            //---------------
+            // Routes
+            //---------------
+            .config(['$routeProvider', function ($routeProvider) {
+                $routeProvider
+                .when('/', {
+                    templateUrl: '/todos.html',
+                    controller: 'TodoController'
+                })
+                .when('/:id', {
+                    templateUrl: '/todoDetails.html',
+                    controller: 'TodoDetailsCtrl'
+                });
+            }]);
+        </script>
+    </body>
+</html>
