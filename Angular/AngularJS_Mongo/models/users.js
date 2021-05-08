@@ -1,9 +1,8 @@
+const mongoose = require('mongoose')
 //Documentos
-var ClienteSchema = mongoose.Schema({
-    nombre: String,
-    apellido: String,
-    domicilio: String,
-    telefono: String,
+var UsersSchema = mongoose.Schema({
+    name: String,
     email: String
- });
- var Cliente = mongoose.model('Cliente', ClienteSchema);
+});
+var User = mongoose.model('User', UsersSchema);
+module.exports = User;

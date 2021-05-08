@@ -1,19 +1,16 @@
-var aplicacoin = angular.module('aplicacion', []);
-aplicacion.controller('Clientes', function($scope, $http) {
+var aplicacoin = angular.module('app', [])
+.controller('Controller', function($scope, $http) {
     $scope._id = null;
-    $scope.nombre = '';
-    $scope.apellido = ''
-    $scope.domicilio = '';
-    $scope.telefono = '';
+    $scope.name = '';
     $scope.email = '';
-    $scope.clientes = [];
-    $scope.cargarClientes = function(){
+    $scope.users = [];
+    $scope.cargarUsers = function(){
         $http({
            method: 'GET', url: '/listar'
         }).
         success(function(data) {
            if(typeof(data) == 'object'){
-              $scope.clientes = data;
+              $scope.users = data;
            }else{
               alert('Error al intentar recuperar los clientes.');
            }
@@ -22,15 +19,12 @@ aplicacion.controller('Clientes', function($scope, $http) {
            alert('Error al intentar recuperar los clientes.');
         });
      };
-     $scope.guardarCliente = function() {
+     $scope.guardarUser = function() {
         $http({
            method: 'POST',
            url: '/guardar',
            params: {
-              nombre: $scope.nombre,
-              apellido: $scope.apellido,
-              domicilio: $scope.domicilio,
-              telefono: $scope.telefono,
+              name: $scope.name,
               email: $scope.email,
               _id: $scope._id
            }
@@ -38,7 +32,7 @@ aplicacion.controller('Clientes', function($scope, $http) {
         success(function(data) {
            if(typeof(data) == 'object'){
               $scope.limpiarDatos();
-              $scope.cargarClientes(); 
+              $scope.cargarUsers();
            }else{
               alert('Error al intentar guardar el cliente.');
            }
@@ -47,7 +41,8 @@ aplicacion.controller('Clientes', function($scope, $http) {
            alert('Error al intentar guardar el cliente.');
         });
      };
-     $scope.recuperarCliente = function(indice) {
+     $scope.recuperarUsuario = function(indice) {
+        console.log('recuperarUsuario')
         $http({
            method: 'GET',
            url: '/recuperar',
@@ -56,12 +51,10 @@ aplicacion.controller('Clientes', function($scope, $http) {
            }
         }).
         success(function(data) {
+            console.log('data:', data)
            if(typeof(data) == 'object'){
               $scope._id = data._id;
-              $scope.nombre = data.nombre;
-              $scope.apellido = data.apellido;
-              $scope.domicilio = data.domicilio;
-              $scope.telefono = data.telefono;
+              $scope.name = data.name;
               $scope.email = data.email;
            }else{
               alert('Error al intentar recuperar el cliente.');
@@ -71,9 +64,9 @@ aplicacion.controller('Clientes', function($scope, $http) {
            alert('Error al intentar recuperar el cliente.');
         });
      };
-     $scope.eliminarCliente = function(indice) {
+     $scope.eliminarUsuario = function(indice) {
         $http({
-           method: 'POST',
+           method: 'DELETE',
            url: '/eliminar',
            params: {
               _id: indice
@@ -82,7 +75,7 @@ aplicacion.controller('Clientes', function($scope, $http) {
         success(function(data) {
            if(data == 'Ok'){
               $scope.limpiarDatos();
-              $scope.cargarClientes();
+              $scope.cargarUsers();
            }else{
               alert('Error al intentar eliminar el cliente.');
            } 
@@ -93,10 +86,7 @@ aplicacion.controller('Clientes', function($scope, $http) {
      };
      $scope.limpiarDatos = function() {
         $scope._id = null;
-        $scope.nombre = '';
-        $scope.apellido = '';
-        $scope.domicilio = '';
-        $scope.telefono = '';
+        $scope.name = '';
         $scope.email = '';
      };
 })
